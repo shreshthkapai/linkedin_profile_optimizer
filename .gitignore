@@ -1,1 +1,7 @@
-pycache/ *.pyc .env *.ipynb *.log venv/ *.DS_Store
+__pycache__/
+*.pyc
+.env
+*.ipynb
+*.log
+venv/
+*.DS_Store
