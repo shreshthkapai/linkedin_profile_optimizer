@@ -26,7 +26,6 @@ def scrape_profile(profile_url: str) -> Optional[Dict[str, Any]]:
         
         dataset_id = run["defaultDatasetId"]
         for item in client.dataset(dataset_id).iterate_items():
-            print("Raw item:", item)
             return dict(item)  # Return raw dictionary
         print("No data returned from dataset")
         return None
