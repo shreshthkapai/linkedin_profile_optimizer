@@ -20,3 +20,87 @@ Try it live: https://linkedinprofileoptimizer.streamlit.app/
 3) HuggingFace API key (free)
 
 ### Installation
+1) Clone the repository
+```sh
+git clone https://github.com/your-username/linkedin-ai-optimizer.git
+cd linkedin-ai-optimizer
+```
+2) Install dependencies
+```sh
+pip install -r requirements.txt
+```
+3) Set up environment variables- Create app/.env file
+```sh
+APIFY_API_TOKEN=your_apify_token_here
+HUGGING_FACE_API_KEY=your_huggingface_token_here
+LI_AT_COOKIE=your_linkedin_cookie_here (optional)
+```
+4) Run the application
+```sh
+streamlit run app/main.py
+```
+Or use the helper script:
+```sh
+python app/run.py
+```
+The app will be available at http://localhost:8501
+
+## 🎯 How to Use
+Enter LinkedIn URL: Paste your LinkedIn profile URL in the input field
+Start Chatting: Ask questions about your profile, career guidance, or job fit analysis
+Get AI Insights: Receive personalized recommendations and actionable feedback
+
+## Example Questions
+"Analyze my LinkedIn profile and suggest improvements."
+"How well does my profile match a Software Engineer role?"
+"Rewrite my About section for better impact."
+"What skills am I missing for a Data Scientist position?"
+
+## 🏗️ Architecture
+1) Multi-Agent System: LangGraph-powered agents for specialized tasks (analysis, content generation, job matching)
+2) Memory Management: Session-based context retention for personalized conversations
+3) Profile Scraping: Apify integration for LinkedIn data extraction
+4) AI Processing: HuggingFace Mistral-7B model for intelligent responses
+
+## For Streamlit Cloud Deployment
+Set secrets in .streamlit/secrets.toml:
+```sh
+APIFY_API_TOKEN = "your_token"
+HUGGING_FACE_API_KEY = "your_token"
+LI_AT_COOKIE = "your_cookie"
+```
+
+## Environment Variables
+1) APIFY_API_TOKEN: Required for LinkedIn profile scraping
+2) HUGGING_FACE_API_KEY: Required for AI model access
+3) LI_AT_COOKIE: Optional, improves scraping reliability
+
+## 📁 Project Structure
+app/
+├── main.py              # Streamlit application entry point
+├── chat_handler.py      # Chat orchestration and workflow management
+├── agents.py            # Multi-agent system with specialized AI agents
+├── scraper.py           # LinkedIn profile data extraction
+├── prompts.py           # AI prompt templates for different tasks
+└── .env                 # Environment variables (create this)
+
+## 🛠️ Tech Stack
+1) Frontend: Streamlit
+2) AI Framework: LangGraph, HuggingFace Transformers
+3) Data Scraping: Apify LinkedIn Scraper
+4) AI Model: Mistral-7B-Instruct
+5) Memory: LangGraph MemorySaver
+
+## 📋 Requirements
+See requirements.txt for complete dependency list. Key packages:
+
+streamlit
+langgraph
+apify-client
+huggingface_hub
+python-dotenv
+
+##🔗 APIs Used
+1) Apify LinkedIn Scraper: Profile data extraction
+2) HuggingFace Inference API: AI model hosting and inference
+   
