@@ -94,16 +94,11 @@ app/
 
 ## 📋 Requirements
 See requirements.txt for the complete dependency list. Key packages:
-
-streamlit
-
-langgraph
-
-apify-client
-
-huggingface_hub
-
-python-dotenv
+1) streamlit
+2) langgraph
+3) apify-client
+4) huggingface_hub
+5) python-dotenv
 
 ## 🔗 APIs Used
 1) Apify LinkedIn Scraper: Profile data extraction
