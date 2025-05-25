@@ -76,6 +76,7 @@ LI_AT_COOKIE = "your_cookie"
 3) LI_AT_COOKIE: Optional, improves scraping reliability
 
 ## 📁 Project Structure
+```
 app/
 ├── main.py              # Streamlit application entry point
 ├── chat_handler.py      # Chat orchestration and workflow management
@@ -83,7 +84,7 @@ app/
 ├── scraper.py           # LinkedIn profile data extraction
 ├── prompts.py           # AI prompt templates for different tasks
 └── .env                 # Environment variables (create this)
-
+```
 ## 🛠️ Tech Stack
 1) Frontend: Streamlit
 2) AI Framework: LangGraph, HuggingFace Transformers
@@ -92,15 +93,19 @@ app/
 5) Memory: LangGraph MemorySaver
 
 ## 📋 Requirements
-See requirements.txt for complete dependency list. Key packages:
+See requirements.txt for the complete dependency list. Key packages:
 
 streamlit
+
 langgraph
+
 apify-client
+
 huggingface_hub
+
 python-dotenv
 
-##🔗 APIs Used
+## 🔗 APIs Used
 1) Apify LinkedIn Scraper: Profile data extraction
 2) HuggingFace Inference API: AI model hosting and inference
    
