@@ -34,36 +34,48 @@ def call_llm_api(messages: List[Dict[str, str]]) -> str:
     if not hf_token:
         raise ValueError("HUGGING_FACE_API_KEY not configured.")
 
-    client = InferenceClient(
-        model="mistralai/Mistral-7B-Instruct-v0.3",
-        token=hf_token
-    )
+    client = InferenceClient(token=hf_token)
 
     try:
-        completion = client.chat.completions.create(
+        # Convert messages to a single prompt for better compatibility
+        prompt_parts = []
+        for msg in messages:
+            if msg['role'] == 'system':
+                prompt_parts.append(f"System: {msg['content']}")
+            elif msg['role'] == 'user':
+                prompt_parts.append(f"Human: {msg['content']}")
+            elif msg['role'] == 'assistant':
+                prompt_parts.append(f"Assistant: {msg['content']}")
+        
+        full_prompt = "\n\n".join(prompt_parts) + "\n\nAssistant:"
+        
+        # Use text_generation instead of chat.completions
+        response = client.text_generation(
+            prompt=full_prompt,
             model="mistralai/Mistral-7B-Instruct-v0.3",
-            messages=messages,
-            max_tokens=2500,
-            temperature=0.4,
+            max_new_tokens=1000,
+            temperature=0.3,
             top_p=0.9,
-            frequency_penalty=0.3,
-            presence_penalty=0.1
+            repetition_penalty=1.1,
+            stop_sequences=["Human:", "System:"],
+            return_full_text=False
         )
         
-        # Handle response properly
-        if hasattr(completion, 'choices') and len(completion.choices) > 0:
-            if hasattr(completion.choices[0], 'message'):
-                return completion.choices[0].message.content.strip()
-            elif isinstance(completion.choices[0], dict):
-                return completion.choices[0].get('message', {}).get('content', '').strip()
-            else:
-                return str(completion.choices[0]).strip()
+        # Clean the response
+        if isinstance(response, str):
+            result = response.strip()
+        else:
+            result = str(response).strip()
+            
+        # Basic cleaning to remove malformed text
+        lines = [line.strip() for line in result.split('\n') if line.strip()]
+        cleaned_lines = [line for line in lines if len(line) > 5]  # Remove very short fragments
         
-        return str(completion).strip()
+        return '\n\n'.join(cleaned_lines) if cleaned_lines else result
 
     except Exception as e:
         print(f"LLM API Error: {str(e)}")
-        return "Error processing request"
+        return "I apologize, but I'm having trouble processing your request right now. Please try again."
 
 
 def scrape_agent(state: AgentState) -> AgentState:
@@ -95,8 +107,11 @@ def _run_agent_with_prompt(state: AgentState, prompt_template: str) -> AgentStat
         return state
 
     try:
+        # Format profile data nicely for the prompt
+        profile_summary = _format_profile_data(state["profile_data"])
+        
         base_prompt = prompt_template.format(
-            profile_data=state["profile_data"],
+            profile_data=profile_summary,
             user_query=state["user_query"],
             job_role=state.get("job_role", "")
         )
@@ -121,40 +136,59 @@ def _run_agent_with_prompt(state: AgentState, prompt_template: str) -> AgentStat
         return state
 
 
+def _format_profile_data(profile_data: dict) -> str:
+    """Format profile data into a readable summary"""
+    if not profile_data:
+        return "Profile data not available"
+    
+    summary_parts = []
+    
+    # Basic info
+    if profile_data.get("name"):
+        summary_parts.append(f"Name: {profile_data['name']}")
+    
+    if profile_data.get("headline"):
+        summary_parts.append(f"Headline: {profile_data['headline']}")
+    
+    if profile_data.get("summary"):
+        summary_parts.append(f"Summary: {profile_data['summary']}")
+    
+    # Experience
+    if profile_data.get("experience"):
+        summary_parts.append("Experience:")
+        for exp in profile_data["experience"][:3]:  # Top 3 experiences
+            if isinstance(exp, dict):
+                title = exp.get("title", "")
+                company = exp.get("company", "")
+                summary_parts.append(f"  - {title} at {company}")
+    
+    # Skills
+    if profile_data.get("skills"):
+        skills_list = profile_data["skills"]
+        if isinstance(skills_list, list) and skills_list:
+            if isinstance(skills_list[0], dict):
+                skills_names = [skill.get("name", "") for skill in skills_list[:10]]
+            else:
+                skills_names = skills_list[:10]
+            summary_parts.append(f"Skills: {', '.join(str(s) for s in skills_names if s)}")
+    
+    return "\n".join(summary_parts) if summary_parts else "Limited profile information available"
+
+
 def route_agent(state: AgentState) -> AgentState:
     try:
-        routing_prompt = f"""
-You are a smart router in a multi-agent AI system for LinkedIn career help.
-
-Classify the user's message into one of these categories and respond ONLY with the category name:
-- profile_analysis
-- job_fit
-- content_enhancement
-- skill_gap
-
-USER QUERY:
-"{state['user_query']}"
-""".strip()
-
-        messages = [
-            {"role": "system", "content": "You are a routing classifier."},
-            {"role": "user", "content": routing_prompt}
-        ]
-
-        # Get and clean response
-        response = call_llm_api(messages)
-        cleaned = str(response).lower().strip()
+        user_query = state['user_query'].lower()
         
-        # Valid categories
-        valid_categories = {
-            "profile_analysis", 
-            "job_fit", 
-            "content_enhancement", 
-            "skill_gap"
-        }
-        
-        # Default to profile_analysis if response isn't valid
-        state["next_node"] = cleaned if cleaned in valid_categories else "profile_analysis"
+        # Simple keyword-based routing (more reliable than LLM routing)
+        if any(word in user_query for word in ['job', 'role', 'position', 'career', 'suited', 'fit']):
+            state["next_node"] = "job_fit"
+        elif any(word in user_query for word in ['improve', 'enhance', 'better', 'rewrite', 'content']):
+            state["next_node"] = "content_enhancement"  
+        elif any(word in user_query for word in ['skill', 'learn', 'gap', 'missing', 'development']):
+            state["next_node"] = "skill_gap"
+        else:
+            state["next_node"] = "profile_analysis"
+            
         return state
 
     except Exception as e:
