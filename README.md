@@ -1,31 +1,22 @@
-LinkedIn AI Optimizer
-An AI-powered chat system to optimize LinkedIn profiles, analyze job fit, and provide career guidance. Built with Streamlit, LangGraph, and Apify for a seamless, personalized experience.
-Features
+# LinkedIn AI Optimizer 💼
+An AI-powered chat system that helps users optimize their LinkedIn profiles, analyze job fit, and receive personalized career guidance. Built with Streamlit, LangGraph, and powered by HuggingFace AI models.
 
-Interactive Chat Interface: Input a LinkedIn profile URL and job role to get feedback and recommendations.
-Profile Analysis: Evaluates LinkedIn profile sections (About, Experience, Skills) for gaps and improvements.
-Job Fit Analysis: Compares profiles to job descriptions and generates a match score.
-Content Enhancement: Rewrites profile sections to align with industry standards.
-Career Guidance: Suggests skills and learning resources for career growth.
-Memory System: Retains user context across sessions using LangGraph.
+## ✨ Features
+1) Interactive Chat Interface: Input your LinkedIn profile URL and chat with AI for personalized feedback.
+2) Profile Analysis: Comprehensive evaluation of LinkedIn sections (About, Experience, Skills) with actionable improvements.
+3) Job Fit Analysis: Compare your profile against target roles with match scores and gap analysis.
+4) Content Enhancement: AI-generated rewrites of profile sections for better impact and keyword optimization.
+5) Skill Gap Analysis: Identify missing skills and get learning recommendations with specific resources.
+6) Persistent Memory: ChatGPT-like conversation memory with intelligent truncation (maintains last 10 conversation turns).
+7) Session Management: Context retention across chat sessions using LangGraph checkpointers.
 
-Setup
+## 🌐 Live Demo
+Try it live: https://linkedinprofileoptimizer.streamlit.app/
 
-Clone the repo: git clone https://github.com/<your-username>/linkedin-ai-optimizer.git
-Install dependencies: pip install -r requirements.txt
-Install Ollama and pull Mistral: ollama pull mistral
-Set environment variable:
-APIFY_API_TOKEN: Your Apify API key.
+## 🚀 Quick Start
+### Prerequisites
+1) Python 3.11+
+2) Apify API token (free tier available)
+3) HuggingFace API key (free)
 
-
-Run the app: streamlit run app/main.py
-
-Deployment
-Hosted on Streamlit Cloud at <your-public-url>.
-Requirements
-See requirements.txt for dependencies.
-Documentation
-
-docs/architecture.md: System design, challenges, and solutions.
-docs/setup.md: Detailed setup instructions.
-
+### Installation
