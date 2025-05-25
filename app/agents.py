@@ -1,4 +1,3 @@
-# agents.py
 from langgraph.graph import StateGraph
 from langgraph.checkpoint.memory import MemorySaver
 from huggingface_hub import InferenceClient
@@ -14,7 +13,6 @@ import os
 import json
 import re
 
-
 class AgentState(TypedDict):
     profile_url: str
     profile_data: Optional[dict]
@@ -25,12 +23,10 @@ class AgentState(TypedDict):
     chat_history: List[Dict[str, str]]
     next_node: Optional[str]
 
-
 def truncate_chat_history(chat_history: List[Dict[str, str]], max_turns=10) -> List[Dict[str, str]]:
     if len(chat_history) <= max_turns * 2:
         return chat_history
     return chat_history[-max_turns * 2:]
-
 
 def call_llm_api(messages: List[Dict[str, str]]) -> str:
     hf_token = os.getenv('HUGGING_FACE_API_KEY')
@@ -74,29 +70,23 @@ def call_llm_api(messages: List[Dict[str, str]]) -> str:
         print(f"LLM API Error: {str(e)}")
         return "I apologize, but I'm having trouble processing your request right now. Please try again."
 
-
 def scrape_agent(state: AgentState) -> AgentState:
     if not state.get("profile_data"):
         profile_data = scrape_profile(state["profile_url"])
         state["profile_data"] = profile_data
     return state
 
-
 def profile_analysis_agent(state: AgentState) -> AgentState:
     return _run_agent_with_prompt(state, profile_analysis_prompt)
-
 
 def job_fit_agent(state: AgentState) -> AgentState:
     return _run_agent_with_prompt(state, job_fit_prompt)
 
-
 def content_enhancement_agent(state: AgentState) -> AgentState:
     return _run_agent_with_prompt(state, content_enhancement_prompt)
 
-
 def skill_gap_agent(state: AgentState) -> AgentState:
     return _run_agent_with_prompt(state, skill_gap_prompt)
-
 
 def _run_agent_with_prompt(state: AgentState, prompt_template: str) -> AgentState:
     if not state.get("profile_data"):
@@ -131,7 +121,6 @@ def _run_agent_with_prompt(state: AgentState, prompt_template: str) -> AgentStat
         state["analysis_result"] = f"Error during AI processing: {str(e)}"
         return state
 
-
 def _format_profile_data(profile_data: dict) -> str:
     if not profile_data:
         return "Profile data not available"
@@ -161,12 +150,10 @@ def _format_profile_data(profile_data: dict) -> str:
             summary_parts.append(f"Skills: {', '.join(str(s) for s in skills_names if s)}")
     return "\n".join(summary_parts) if summary_parts else "Limited profile information available"
 
-
 def _validate_response(response: str) -> str:
     if not response or not isinstance(response, str):
         return "Sorry, the assistant could not generate a valid response."
 
-    # Check if it contains a match score percentage
     match_scores = re.findall(r"\b\d{1,3}%\b", response)
     if "match" in response.lower() and match_scores:
         response += f"\n\n✅ Parsed Match Scores: {', '.join(match_scores)}"
@@ -175,7 +162,6 @@ def _validate_response(response: str) -> str:
         return "Sorry, the assistant's response was too short. Please ask your question again or provide more detail."
 
     return response
-
 
 def route_agent(state: AgentState) -> AgentState:
     try:
