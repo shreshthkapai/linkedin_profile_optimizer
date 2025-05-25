@@ -6,7 +6,6 @@ from typing import Dict, Optional, Any
 load_dotenv()
 
 def scrape_profile(profile_url: str) -> Optional[Dict[str, Any]]:
-    """Scrape raw LinkedIn profile data using Apify."""
     try:
         apify_token = os.getenv("APIFY_API_TOKEN")
         if not apify_token:
@@ -26,7 +25,7 @@ def scrape_profile(profile_url: str) -> Optional[Dict[str, Any]]:
         
         dataset_id = run["defaultDatasetId"]
         for item in client.dataset(dataset_id).iterate_items():
-            return dict(item)  # Return raw dictionary
+            return dict(item)
         print("No data returned from dataset")
         return None
     except Exception as e:
