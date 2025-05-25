@@ -1,4 +1,3 @@
-# chat_handler.py
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
 from agents import (
@@ -16,7 +15,7 @@ class ChatHandler:
     def __init__(self):
         self.memory = MemorySaver()
         self.workflow = self._build_workflow()
-        self.session_data = {}  # Store session-specific data
+        self.session_data = {}
 
     def _build_workflow(self):
         workflow = StateGraph(AgentState)
@@ -120,7 +119,6 @@ class ChatHandler:
 
         result = '\n\n'.join(cleaned_lines) if cleaned_lines else response
 
-        # Validate minimum quality
         if len(result.strip()) < 50 or "error" in result.lower():
             return (
                 "I couldn't generate a detailed response. Please try rephrasing your question "
