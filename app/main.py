@@ -1,4 +1,8 @@
 import streamlit as st
+
+# ✅ Set page config FIRST before any other Streamlit command
+st.set_page_config(page_title="LearnTube", page_icon="💼", layout="wide")
+
 import uuid
 import os
 from chat_handler import ChatHandler
@@ -13,8 +17,6 @@ except Exception:
     # Fallback to environment variables (local development)
     from dotenv import load_dotenv
     load_dotenv()
-
-st.set_page_config(page_title="LearnTube", page_icon="💼", layout="wide")
 
 # Initialize session state
 if "session_id" not in st.session_state:
@@ -83,7 +85,6 @@ def main():
     else:
         st.info("👆 Enter your LinkedIn profile URL above to start chatting with the AI assistant.")
         
-        # Add some example queries
         st.markdown("### 💡 Example Questions:")
         st.markdown("""
         - "Analyze my LinkedIn profile and suggest improvements"
